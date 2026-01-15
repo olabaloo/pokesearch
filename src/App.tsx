@@ -5,22 +5,30 @@ import "./App.css";
 function App() {
   const [error, setError] = useState<unknown>(null);
 
+  const fetchOrFail = async (url: string): Promise<Response | undefined> => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        setError(`Response status: ${response.status}`);
+        return;
+      }
+
+      return await response.json();
+    } catch (error) {
+      setError(error);
+    }
+  };
+
   const searchPokemon = async (e: FormEvent) => {
     e.preventDefault();
 
-    const pokemonName = textInputRef.current?.value;
+    const pokemonName = textInputRef.current?.value.trim().toLowerCase();
     if (pokemonName) {
-      try {
-        const response = await fetch(
-          `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
-        );
-        if (!response.ok) {
-          throw new Error(`Response status: ${response.status}`);
-        }
-
-        parseSuccessHtml(await response.json());
-      } catch (error) {
-        setError(error);
+      const responseJson = await fetchOrFail(
+        `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
+      );
+      if (responseJson) {
+        parseSuccessHtml(responseJson);
       }
     }
   };
