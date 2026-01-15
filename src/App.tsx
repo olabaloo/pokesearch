@@ -1,10 +1,8 @@
 import { useRef, useState, type FormEvent } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import pokemonLogo from "/pokemon.png";
 import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
 
   function searchPokemon(e: FormEvent) {
     e.preventDefault();
@@ -22,12 +20,7 @@ function App() {
   return (
     <>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <img src={pokemonLogo} className="logo" alt="Pokesearch app logo" />
       </div>
       <h1>Pokesearch!</h1>
       <form className="card">
