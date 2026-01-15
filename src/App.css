@@ -9,8 +9,32 @@
   height: 6em;
 }
 
+.form {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 1fr 9em;
+  grid-template-areas:
+    "label input submit"
+    "result result result";
+  align-items: center;
+  gap: 1em;
+}
 
+label {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+}
 
-.card {
-  padding: 2em;
+.validation-error:not(:empty) {
+  color: white;
+  background-color: #ff3333;
+  border: 1px solid darkred;
+  border-radius: 1em;
+  grid-area: result;
+}
+
+.pokemon-card {
+  grid-area: result;
+  align-self: baseline;
 }

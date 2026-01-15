@@ -1,21 +1,63 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import pokemonLogo from "/pokemon.png";
 import "./App.css";
 
 function App() {
+  const [error, setError] = useState<unknown>(null);
 
-  function searchPokemon(e: FormEvent) {
+  const searchPokemon = async (e: FormEvent) => {
     e.preventDefault();
+
     const pokemonName = textInputRef.current?.value;
     if (pokemonName) {
-      fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`)
-        .then((response) => response.json())
-        .then((data) => console.log(data))
-        .catch((error) => console.error("Error fetching data:", error));
+      try {
+        const response = await fetch(
+          `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
+        );
+        if (!response.ok) {
+          throw new Error(`Response status: ${response.status}`);
+        }
+
+        parseSuccessHtml(await response.json());
+      } catch (error) {
+        setError(error);
+      }
     }
-  }
+  };
+
+  const parseSuccessHtml = (data: any): void => {
+    const name = data.name.charAt(0).toUpperCase() + data.name.slice(1);
+    const imgSrc = data.sprites.front_default;
+
+    const abilities = data.abilities
+      .map((abilityInfo: any) => abilityInfo.ability.name)
+      .join(", ");
+
+    const result = `<div class='pokemon-card'><img src="${imgSrc}" alt="${name}"/><p>${name}</p><p>Abilities: ${abilities}</p></div>`;
+    cardRef.current!.innerHTML = result;
+  };
+
+  const parseErrorHtml = (error: unknown): void => {
+    validationErrorRef.current!.innerHTML = error as string;
+  };
+
+  useEffect(() => {
+    if (error) {
+      parseErrorHtml(error);
+      setError(null);
+    }
+  }, [error]);
 
   const textInputRef = useRef<HTMLInputElement>(null);
+  const validationErrorRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleInputChange = () => {
+    validationErrorRef.current!.innerHTML = "";
+    cardRef.current!.innerHTML = "";
+  };
+
+  const inputId = useId();
 
   return (
     <>
@@ -23,12 +65,21 @@ function App() {
         <img src={pokemonLogo} className="logo" alt="Pokesearch app logo" />
       </div>
       <h1>Pokesearch!</h1>
-      <form className="card">
-        <label>
-          Seach for a pokemon:
-          <input ref={textInputRef} type="text" />
-        </label>
+      <form className="form">
+        <label htmlFor={inputId}>Seach for a pokemon:</label>
+        <input
+          id={inputId}
+          ref={textInputRef}
+          type="text"
+          onChange={handleInputChange}
+        />
         <button onClick={(e: FormEvent) => searchPokemon(e)}>Search</button>
+        <div
+          className="validation-error"
+          role="alert"
+          ref={validationErrorRef}
+        ></div>
+        <div className="pokemon-card" ref={cardRef}></div>
       </form>
     </>
   );
