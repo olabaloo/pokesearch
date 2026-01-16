@@ -10,12 +10,13 @@
 }
 
 .form {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: 1fr 9em;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 1fr 15em;
   grid-template-areas:
-    "label input submit"
-    "result result result";
+    "input submit"
+    "result abilities";
   align-items: center;
   gap: 1em;
 }
@@ -26,12 +27,17 @@ label {
   align-items: center;
 }
 
+button {
+  justify-self: start;
+}
+
 .validation-error:not(:empty) {
   color: white;
   background-color: #ff3333;
   border: 1px solid darkred;
   border-radius: 1em;
   grid-area: result;
+  grid-column: 1 / -1;
 }
 
 .pokemon-card:not(:empty) {

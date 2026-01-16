@@ -120,13 +120,15 @@ function App() {
       </div>
       <h1>Pokesearch!</h1>
       <form className="form">
-        <label htmlFor={inputId}>Seach for a pokemon:</label>
-        <input
-          id={inputId}
-          ref={textInputRef}
-          type="text"
-          onChange={handleInputChange}
-        />
+        <label>
+          Seach for a pokemon:
+          <input
+            id={inputId}
+            ref={textInputRef}
+            type="text"
+            onChange={handleInputChange}
+          />
+        </label>
         <button onClick={handleSubmit}>Search</button>
         <div
           className="validation-error"
