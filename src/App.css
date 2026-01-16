@@ -44,4 +44,12 @@ label {
 .pokemon-details {
   text-align: left;
 }
+
+.abilities-aside {
+  grid-area: abilities;
+  text-align: left;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
 }

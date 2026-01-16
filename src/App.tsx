@@ -32,6 +32,18 @@ function App() {
     }
   };
 
+  const fetchAbilitiesDetails = async (abilities: [], name: string) => {
+    abilitiesRef.current!.innerHTML += `<h3>${name}'s abilities explained:</h3>`;
+    abilities.map(async (abilityInfo: any) => {
+      const responseJson = await fetchOrFail(abilityInfo.ability.url);
+      if (responseJson) {
+        abilitiesRef.current!.innerHTML += `<details class='ability-detail'><summary>${
+          responseJson.name.charAt(0).toUpperCase() + responseJson.name.slice(1)
+        }</summary><p>${responseJson.effect_entries[1].effect}</p></details>`;
+      }
+    });
+  };
+
   const getNamesList = (namesArray: any): string => {
     return new Intl.ListFormat("en", {
       type: "conjunction",
@@ -55,6 +67,8 @@ function App() {
     const detailsHtml = `<ul class="pokemon-details"><li>Abilities: ${abilityNames}.</li><li>Types: ${typeNames}.</li></ul>`;
 
     cardRef.current!.innerHTML = `${nameAndImageHtml}${detailsHtml}`;
+
+    fetchAbilitiesDetails(data.abilities, name);
   };
 
   const parseErrorHtml = (error: unknown): void => {
@@ -63,6 +77,7 @@ function App() {
 
   const resetErrorAndInfo = () => {
     validationErrorRef.current!.innerHTML = "";
+    abilitiesRef.current!.innerHTML = "";
     cardRef.current!.innerHTML = "";
   };
 
@@ -94,6 +109,8 @@ function App() {
   const textInputRef = useRef<HTMLInputElement>(null);
   const validationErrorRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const abilitiesRef = useRef<HTMLDivElement>(null);
+
   const inputId = useId();
 
   return (
@@ -117,6 +134,7 @@ function App() {
           ref={validationErrorRef}
         ></div>
         <div className="pokemon-card" ref={cardRef}></div>
+        <aside className="abilities-aside" ref={abilitiesRef}></aside>
       </form>
     </>
   );
