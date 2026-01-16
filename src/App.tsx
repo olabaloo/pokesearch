@@ -4,6 +4,7 @@ import "./App.css";
 
 function App() {
   const [error, setError] = useState<unknown>(null);
+  const [inputHasChanged, setInputHasChanged] = useState(false);
 
   const fetchOrFail = async (url: string): Promise<Response | undefined> => {
     try {
@@ -19,9 +20,7 @@ function App() {
     }
   };
 
-  const searchPokemon = async (e: FormEvent) => {
-    e.preventDefault();
-
+  const searchPokemon = async () => {
     const pokemonName = textInputRef.current?.value.trim().toLowerCase();
     if (pokemonName) {
       const responseJson = await fetchOrFail(
@@ -49,22 +48,37 @@ function App() {
     validationErrorRef.current!.innerHTML = error as string;
   };
 
-  useEffect(() => {
-    if (error) {
-      parseErrorHtml(error);
-      setError(null);
-    }
-  }, [error]);
-
-  const textInputRef = useRef<HTMLInputElement>(null);
-  const validationErrorRef = useRef<HTMLDivElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  const handleInputChange = () => {
+  const resetErrorAndInfo = () => {
     validationErrorRef.current!.innerHTML = "";
     cardRef.current!.innerHTML = "";
   };
 
+  useEffect(() => {
+    if (error) {
+      parseErrorHtml(error);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (inputHasChanged) {
+      resetErrorAndInfo();
+    }
+  }, [inputHasChanged]);
+
+  const handleInputChange = () => {
+    setError(null);
+    setInputHasChanged(true);
+  };
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    searchPokemon();
+    setInputHasChanged(false);
+  };
+
+  const textInputRef = useRef<HTMLInputElement>(null);
+  const validationErrorRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const inputId = useId();
 
   return (
@@ -81,7 +95,7 @@ function App() {
           type="text"
           onChange={handleInputChange}
         />
-        <button onClick={(e: FormEvent) => searchPokemon(e)}>Search</button>
+        <button onSubmit={handleSubmit}>Search</button>
         <div
           className="validation-error"
           role="alert"
