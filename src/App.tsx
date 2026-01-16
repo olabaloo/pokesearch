@@ -32,16 +32,29 @@ function App() {
     }
   };
 
+  const getNamesList = (namesArray: any): string => {
+    return new Intl.ListFormat("en", {
+      type: "conjunction",
+    }).format(namesArray);
+  };
+
   const parseSuccessHtml = (data: any): void => {
     const name = data.name.charAt(0).toUpperCase() + data.name.slice(1);
     const imgSrc = data.sprites.front_default;
 
-    const abilities = data.abilities
-      .map((abilityInfo: any) => abilityInfo.ability.name)
-      .join(", ");
+    const nameAndImageHtml = `<figure><figcaption><h2>${name}</h2></figcaption><img src="${imgSrc}" alt="${name}"/></figure>`;
 
-    const result = `<div class='pokemon-card'><img src="${imgSrc}" alt="${name}"/><p>${name}</p><p>Abilities: ${abilities}</p></div>`;
-    cardRef.current!.innerHTML = result;
+    const abilityNameArray = data.abilities.map(
+      (abilityInfo: any) => abilityInfo.ability.name
+    );
+    const abilityNames = getNamesList(abilityNameArray);
+
+    const typeNameArray = data.types.map((typeInfo: any) => typeInfo.type.name);
+    const typeNames = getNamesList(typeNameArray);
+
+    const detailsHtml = `<ul class="pokemon-details"><li>Abilities: ${abilityNames}.</li><li>Types: ${typeNames}.</li></ul>`;
+
+    cardRef.current!.innerHTML = `${nameAndImageHtml}${detailsHtml}`;
   };
 
   const parseErrorHtml = (error: unknown): void => {
@@ -72,8 +85,10 @@ function App() {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    searchPokemon();
-    setInputHasChanged(false);
+    if (inputHasChanged) {
+      searchPokemon();
+      setInputHasChanged(false);
+    }
   };
 
   const textInputRef = useRef<HTMLInputElement>(null);
@@ -95,7 +110,7 @@ function App() {
           type="text"
           onChange={handleInputChange}
         />
-        <button onSubmit={handleSubmit}>Search</button>
+        <button onClick={handleSubmit}>Search</button>
         <div
           className="validation-error"
           role="alert"

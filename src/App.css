@@ -34,7 +34,14 @@ label {
   grid-area: result;
 }
 
-.pokemon-card {
+.pokemon-card:not(:empty) {
   grid-area: result;
   align-self: baseline;
+  border: 8px solid lightgray;
+  border-radius: 1em;
+}
+
+.pokemon-details {
+  text-align: left;
+}
 }
